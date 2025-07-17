@@ -24,13 +24,13 @@
 2. 选择 **Android Kernel Driver Builder**
 3. 点击 **Run workflow**
 4. 提供以下参数：
-   - `android_version`: Android 版本 (例如 `14`)
+   - `android_version`: Android 版本(内核) (例如 `14`)
    - `kernel_version`: 内核版本 (例如 `6.1`)
    - `driver_name`: 驱动文件名 (例如 `mydriver.ko`)
    - `target_arch`: 设备架构 (默认 `aarch64`)
 
 ### 3. 获取结果
-编译成功后 (45-60 分钟)：
+编译成功后 (30 分钟)：
 1. 转到完成的工作流运行
 2. 下载 `kernel-driver-<架构>` 产物
 3. 解压后包含：
@@ -81,5 +81,5 @@ A: 确认内核版本在 [Android 内核源码](https://android.googlesource.com
 ## 支持
 
 问题反馈和功能请求：
-- [提交 Issue](https://github.com/your-repo/issues)
+- [提交 Issue](https://github.com/systemnb/compile_android_driver/issues)
 - 请提供工作流日志和输入参数

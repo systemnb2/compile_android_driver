@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       android_version:
-        description: 'Android Version (e.g., 14)'
+        description: 'Android Version (Kernel) (e.g., 14)'
         required: true
       kernel_version:
         description: 'Kernel Version (e.g., 6.1)'
@@ -52,6 +52,7 @@ jobs:
           echo "obj-y += kerneldriver/" >> common/drivers/Makefile
 
       - name: Add module to GKI modules list
+        if: ${{ github.event.inputs.android_version > 13 }}
         run: |
           cd android-kernel
           MODULE_NAME="drivers/kerneldriver/${{ github.event.inputs.driver_name }}"
@@ -74,7 +75,12 @@ jobs:
             }
             { print }
           ' common/modules.bzl
-
+          
+      - name: Prepare module list for legacy builds
+        if: ${{ github.event.inputs.android_version <= 13 }}
+        run: |
+          cd android-kernel
+          echo "drivers/kerneldriver/${{ github.event.inputs.driver_name }}" >> common/android/gki_aarch64_modules
       - name: Increase stack frame size limit
         run: |
           cd android-kernel
@@ -89,19 +95,20 @@ jobs:
       - name: Build kernel module
         run: |
           cd android-kernel
-          
-          if [ ${{ github.event.inputs.android_version }} -lt 12 ]; then
-            echo "Using legacy build system for Android ${{ github.event.inputs.android_version }}"
-            build/build.sh
+          if [ ${{ github.event.inputs.android_version }} -le 13 ]; then
+            BUILD_CONFIG=common/build.config.gki.${{ github.event.inputs.target_arch }} LTO=thin build/build.sh -j32
+            OUTPUT_PATH="out/android${{ github.event.inputs.android_version }}-${{ github.event.inputs.kernel_version }}/dist"
           else
             echo "Using Bazel build system for Android ${{ github.event.inputs.android_version }}"
             tools/bazel run //common:kernel_${{ github.event.inputs.target_arch }}_dist
+            OUTPUT_PATH="out/kernel_${{ github.event.inputs.target_arch }}"
           fi
-        continue-on-error: false
-        
+          echo "OUTPUT_PATH=$OUTPUT_PATH" >> $GITHUB_ENV
+        continue-on-error: true
+      
       - name: Upload artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
           name: kernel-driver-${{ github.event.inputs.target_arch }}
           path: |
-            android-kernel/out/kernel_${{ github.event.inputs.target_arch }}
+            android-kernel/${{ env.OUTPUT_PATH }}

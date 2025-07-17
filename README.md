@@ -25,13 +25,13 @@ This GitHub Action automates the process of building Android kernel drivers in t
 2. Select **Android Kernel Driver Builder**
 3. Click **Run workflow**
 4. Provide these parameters:
-   - `android_version`: Your Android version (e.g., `14`)
+   - `android_version`: Your Android version (Kernel) (e.g., `14`)
    - `kernel_version`: Kernel version (e.g., `6.1`)
    - `driver_name`: Your driver filename (e.g., `mydriver.ko`)
    - `target_arch`: Device architecture (default: `aarch64`)
 
 ### 3. Retrieving Results
-After successful compilation (45-60 minutes):
+After successful compilation (30minutes):
 1. Go to the completed workflow run
 2. Download the `kernel-driver-<arch>` artifact
 3. Extract to find:
@@ -82,5 +82,5 @@ A: Confirm your kernel_version matches existing branches at [Android Kernel Sour
 ## Support
 
 For issues and feature requests:
-- [Open an Issue](https://github.com/your-repo/issues)
+- [Open an Issue](https://github.com/systemnb/compile_android_driver/issues)
 - Provide workflow logs and input parameters
